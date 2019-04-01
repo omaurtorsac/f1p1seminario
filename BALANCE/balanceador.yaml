@@ -166,7 +166,7 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTable1
       SubnetId: !Ref PrivateSubnet1
-  
+
   PrivateSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -291,14 +291,51 @@ Resources:
             ]
           ] 
 
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 60
+      ConnectionSettings:
+        IdleTimeout: 60
+      CrossZone: true
+      Listeners:
+        - InstancePort: 80
+          InstanceProtocol: HTTP
+          LoadBalancerPort: 80
+          Protocol: HTTP
+      HealthCheck:
+        Target:
+          Fn::Join:
+          - ''
+          - - 'HTTP:80'
+            - "/index.html"
+        HealthyThreshold: '3'
+        UnhealthyThreshold: '5'
+        Interval: '30'
+        Timeout: '5'
+      
+      LoadBalancerName: !Sub omaurtorsac
+      Scheme: internet-facing
+      Subnets:
+       - !Ref PublicSubnet1
+       - !Ref PublicSubnet2
+      Instances:
+       - !Ref Ec2Instance1
+       - !Ref Ec2Instance2
+      SecurityGroups:
+       - !Ref InstanceSecurityGroup1
+      Tags:
+        - Key: Name
+          Value: !Sub omaurtorsac
+
+        - Key: Enviroment
+          Value: !Sub omaurtorsac
+
 Outputs:
   EC21:
-    Description: "EC2 Ubuntu con apache"
-    Value: !Ref Ec2Instance2
+    Description: "Creacion Load Balancer"
+    Value: !Ref LoadBalancer
     Export:
-      Name: "ec21"
-  EC22:
-    Description: "EC2 Ubuntu con apache"
-    Value: !Ref Ec2Instance2
-    Export:
-      Name: "ec22"
+      Name: "CargaBalanceada" 

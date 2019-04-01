@@ -173,6 +173,19 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable2
       SubnetId: !Ref PrivateSubnet2
 
+  PrivateRoute1:
+        Type: 'AWS::EC2::Route'
+        Properties:
+          RouteTableId: !Ref PrivateRouteTable1
+          DestinationCidrBlock: 0.0.0.0/0
+          NatGatewayId: !Ref NatGateway
+  
+  PrivateRoute2:
+        Type: 'AWS::EC2::Route'
+        Properties:
+          RouteTableId: !Ref PrivateRouteTable2
+          DestinationCidrBlock: 0.0.0.0/0
+          NatGatewayId: !Ref NatGateway2
 
 Outputs:
   nubeVPC:
