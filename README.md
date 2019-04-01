@@ -1,1 +1,1 @@
-f1p1seminario
+Fase 1 del proyecto de seminario
