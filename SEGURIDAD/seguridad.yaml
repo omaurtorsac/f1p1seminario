@@ -142,7 +142,7 @@ Resources:
         DependsOn: NatPublicIP2
         Properties:
           AllocationId: !GetAtt NatPublicIP2.AllocationId
-          SubnetId: !Ref PublicSubnet2}
+          SubnetId: !Ref PublicSubnet2
   
   PrivateRouteTable1:
     Type: AWS::EC2::RouteTable
@@ -212,8 +212,8 @@ Resources:
         CidrIp: 10.10.0.0/0         
       SecurityGroupEgress:
       - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22
+        FromPort: 10
+        ToPort: 10
         CidrIp: 0.0.0.0/0  
       - IpProtocol: tcp
         FromPort: 80
