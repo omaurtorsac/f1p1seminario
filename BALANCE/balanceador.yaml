@@ -257,12 +257,12 @@ Resources:
               "sudo apt-get update -y",
               "sudo apt install apache2 -y",
               "sudo service apache2 start",
-              "echo \"<html><body><h1>PAGINA WEB 1</h1>\" > /var/www/html/index.html",
-              "echo \"<br><h3>Mauro Alejandro Herrera Castro</h3>\" > /var/www/html/index.html",
-              "echo \"</body></html>\" >> /var/www/html/index.html"
+              "echo \"<html><body><h1>PAGINA WEB 1</h1>\" > /var/www/html/index.php",
+              "echo \"<br><h3>Mauro Alejandro Herrera Castro</h3>\" > /var/www/html/index.php",
+              "echo \"</body></html>\" >> /var/www/html/index.php"
             ]
           ]
-          
+   
   Ec2Instance2: 
     Type: AWS::EC2::Instance
     Properties: 
@@ -285,9 +285,9 @@ Resources:
               "sudo apt-get update -y",
               "sudo apt install apache2 -y",
               "sudo service apache2 start",
-              "echo \"<html><body><h1>PAGINA WEB 2</h1>\" > /var/www/html/index.html",
-              "echo \"<br><h3>Mauro Alejandro Herrera Castro</h3>\" > /var/www/html/index.html",
-              "echo \"</body></html>\" >> /var/www/html/index.html"
+              "echo \"<html><body><h1>PAGINA WEB 2</h1>\" > /var/www/html/index.php",
+              "echo \"<br><h3>Mauro Alejandro Herrera Castro</h3>\" > /var/www/html/index.php",
+              "echo \"</body></html>\" >> /var/www/html/index.php"
             ]
           ] 
 
