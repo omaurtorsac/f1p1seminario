@@ -52,3 +52,183 @@ Resources:
       Tags:
         - Key: "rsPrivada1"
           Value: !Sub ${AWS::StackName} Private Subnet (AZ1)
+    
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Ref: VPC
+      AvailabilityZone: !Select [1 , !GetAZs { Ref: "AWS::Region" } ]
+      CidrBlock: !Select [2, !Cidr [!Ref CidrBlock, 4, 8]]
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "rsPublica2"
+          Value: !Sub ${AWS::StackName} Public Subnet (AZ2)
+          
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs { Ref: "AWS::Region" } ]
+      CidrBlock: !Select [3, !Cidr [!Ref CidrBlock, 4, 8]]
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "rsPrivada2"
+          Value: !Sub ${AWS::StackName} Private Subnet (AZ2)
+  
+  PublicRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Public Routes
+  
+  PublicRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Public Routes
+
+  DefaultPublicRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      
+  DefaultPublicRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      SubnetId: !Ref PublicSubnet1
+      
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable2
+      SubnetId: !Ref PublicSubnet2
+  
+  NatPublicIP:
+        Type: "AWS::EC2::EIP"
+        DependsOn: VPC
+        Properties:
+          Domain: vpc
+
+  NatPublicIP2:
+        Type: "AWS::EC2::EIP"
+        DependsOn: VPC
+        Properties:
+          Domain: vpc
+
+  NatGateway:
+        Type: "AWS::EC2::NatGateway"
+        DependsOn: NatPublicIP
+        Properties:
+          AllocationId: !GetAtt NatPublicIP.AllocationId
+          SubnetId: !Ref PublicSubnet1
+
+  NatGateway2:
+        Type: "AWS::EC2::NatGateway"
+        DependsOn: NatPublicIP2
+        Properties:
+          AllocationId: !GetAtt NatPublicIP2.AllocationId
+          SubnetId: !Ref PublicSubnet2}
+  
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Private Routes
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Private Routes
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      SubnetId: !Ref PrivateSubnet2
+      
+  InstanceSecurityGroup1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: permiso ssh y http
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 10
+        ToPort: 10
+        CidrIp: 0.0.0.0/0        
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0        
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 10
+        ToPort: 10
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+  
+  InstanceSecurityGroup2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: permiso ssh a los servers privados
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 10
+        ToPort: 10
+        CidrIp: 10.10.0.0/16 
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 10.10.0.0/0         
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0  
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+
+Outputs:
+  GrupoSeguro1:
+    Description: "Nombre del security group publico"
+    Value: !Ref InstanceSecurityGroup1
+    Export:
+      Name: "PublicGroup"
+      
+  GrupoSeguro2:
+    Description: "Nombre del security group privado"
+    Value: !Ref InstanceSecurityGroup2
+    Export:
+      Name: "PrivateGroup"
