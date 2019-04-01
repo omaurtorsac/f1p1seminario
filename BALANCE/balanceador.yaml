@@ -315,7 +315,6 @@ Resources:
         UnhealthyThreshold: '5'
         Interval: '30'
         Timeout: '5'
-      
       LoadBalancerName: !Sub omaurtorsac
       Scheme: internet-facing
       Subnets:
