@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
       
 Parameters:
+  KeyName:
+    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
+    Type: "AWS::EC2::KeyPair::KeyName"
+    ConstraintDescription: "Proyecto1"
   CidrBlock:
     Description: "this doc contains the creation of the EC2 instances"
     Type: String
@@ -242,6 +246,7 @@ Resources:
         - Key: Name
           Value: "ec21"
       InstanceType: "t2.micro"
+      KeyName: !Ref KeyName
       ImageId: "ami-0a313d6098716f372" 
       NetworkInterfaces: 
         - AssociatePublicIpAddress: "true"
@@ -270,6 +275,7 @@ Resources:
         - Key: Name
           Value: "ec22"
       InstanceType: "t2.micro"
+      KeyName: !Ref KeyName
       ImageId: "ami-0a313d6098716f372" 
       NetworkInterfaces: 
         - AssociatePublicIpAddress: "true"
