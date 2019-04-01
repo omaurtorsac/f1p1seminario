@@ -248,7 +248,7 @@ Resources:
           DeviceIndex: "0"
           GroupSet: 
             - Ref: "InstanceSecurityGroup2"
-          SubnetId: !Ref PrivateSubnet1
+          SubnetId: !Ref PublicSubnet2
       UserData: 
         Fn::Base64: 
           Fn::Join: [
